@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Community Forum</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .comments-section {
+            margin-top: 20px;
+        }
+
+        .comment {
+            margin: 10px 0;
+            padding: 10px;
+            background-color: #e8f5ff;
+            border-radius: 5px;
+        }
+
+        textarea,
+        select {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            resize: none;
+        }
+
+        .btn {
+            background-color: #004466;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s;
+        }
+
+        .btn:hover {
+            background-color: #006699;
+        }
+    </style>
+
+</head>
+
+<body>
+    <header>
+        <div class="navbar">
+            <a href="index.html">Home</a>
+            <a href="solar.html">Solar Energy</a>
+            <a href="wind.html">Wind Energy</a>
+            <a href="hydroelectric.html">Hydroelectric Energy</a>
+            <a href="bioenergy.html">Biomass Energy</a>
+            <a href="geothermal.html">Geothermal Energy</a>
+            <a href="maps.html">Map</a>
+            <a href="comparison.html">Comparison Tool</a>
+            <a href="forum.html" class="active">Community Forum</a>
+        </div>
+    </header>
+
+    <div class="top-bar">
+        <button class="login-btn" onclick="location.href='login.html';">Login</button>
+    </div>
+
+    <main>
+        <div class="content">
+            <div class="box">
+                <h2>Community Forum</h2>
+                <p>
+                    Foster a sense of community responsibility in promoting sustainable practices and environmental
+                    stewardship by encouraging users to share their own experiences with renewable energy technologies
+                    and discuss their impact on the environment.
+                </p>
+                <div id="comment-section">
+                    <form id="comment-form" style="margin-top: 10px;">
+                        <div class="dropdown-container">
+                            <label for="renewable-type">Renewable Energy Type:</label>
+                            <select id="renewable-type" required>
+                                <option value="" disabled selected>Select your energy type</option>
+                                <option value="Solar">Solar</option>
+                                <option value="Wind">Wind</option>
+                                <option value="Hydroelectric">Hydroelectric</option>
+                                <option value="Geothermal">Geothermal</option>
+                                <option value="Bioenergy">Bioenergy</option>
+                            </select>
+                        </div>
+                        <textarea id="new-comment" rows="3" placeholder="Write your comment here..."
+                            required></textarea>
+                        <button type="submit" class="btn">Post Comment</button>
+                    </form>
+                </div>
+                <div class="comments-section" id="commentsSection">
+                    <h3>Comments</h3>
+                    <div id="comments-list">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+    <script type="module">
+        // import Firebase modules
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.5.0/firebase-app.js";
+        import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.5.0/firebase-auth.js";
+        import { getFirestore, collection, addDoc, query, orderBy, onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.5.0/firebase-firestore.js";
+
+        // firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyAg8oneWOqeYsz4G_E_3VEcBb19l7QlwVA",
+            authDomain: "global-green-dc846.firebaseapp.com",
+            projectId: "global-green-dc846",
+            storageBucket: "global-green-dc846.firebasestorage.app",
+            messagingSenderId: "392990661986",
+            appId: "1:392990661986:web:992e1ff8089c32dd61e03b"
+        };
+
+        // initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        const authBtn = document.querySelector(".login-btn");
+        const commentsList = document.getElementById("comments-list");
+        const commentSection = document.getElementById("comment-section");
+
+        // track authentication state
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                authBtn.textContent = "Logout";
+                authBtn.onclick = logout;
+                showCommentForm();
+                loadComments();
+            } else {
+                authBtn.textContent = "Login";
+                authBtn.onclick = login;
+                showLoginButton();
+                commentsList.innerHTML = "";
+            }
+        });
+
+
+        function login() {
+            window.location.href = "login.html";  
+        }
+
+
+        function logout() {
+            signOut(auth).then(() => {
+                console.log("Logout successful");
+            }).catch((error) => {
+                console.error("Logout error: ", error);
+                alert("Logout failed, please try again.");
+            });
+        }
+
+        // show comment form if user is logged in
+        function showCommentForm() {
+            commentSection.innerHTML = `
+                <form id="comment-form" style="margin-top: 10px;">
+                    <label for="renewable-type">Renewable Energy Type:</label>
+                    <select id="renewable-type" required>
+                        <option value="" disabled selected>Select your energy type</option>
+                        <option value="Solar">Solar</option>
+                        <option value="Wind">Wind</option>
+                        <option value="Hydroelectric">Hydroelectric</option>
+                        <option value="Geothermal">Geothermal</option>
+                        <option value="Bioenergy">Bioenergy</option>
+                    </select>
+                    <textarea id="new-comment" rows="3" placeholder="Write your comment here..." required></textarea>
+                    <button type="submit" class="btn">Post Comment</button>
+                </form>
+            `;
+
+            // add event listener for form submission
+            document.getElementById("comment-form").addEventListener("submit", async (e) => {
+                e.preventDefault();
+                console.log("Form submitted");
+
+                const energyType = document.getElementById("renewable-type").value;
+                const text = document.getElementById("new-comment").value.trim();
+
+                if (energyType && text) {
+                    try {
+                        await addDoc(collection(db, "comments"), {
+                            energyType: energyType,
+                            text: text,
+                            timestamp: serverTimestamp()
+                        });
+                        console.log("Comment added successfully");
+                        document.getElementById("comment-form").reset();
+                    } catch (error) {
+                        console.error("Error adding comment: ", error);
+                        alert("Error posting comment, please try again.");
+                    }
+                } else {
+                    alert("Please complete all fields before submitting your comment.");
+                }
+            });
+        }
+
+        // show login button if user is not logged in
+        function showLoginButton() {
+            commentSection.innerHTML = `
+                <button class="login-btn" onclick="location.href='login.html';">Log in to Share Your Story</button>
+            `;
+        }
+
+        // load comments from Firestore
+        function loadComments() {
+            const q = query(collection(db, "comments"), orderBy("timestamp", "desc"));
+            onSnapshot(q, (snapshot) => {
+                commentsList.innerHTML = "";
+                snapshot.forEach((doc) => {
+                    const comment = doc.data();
+                    const commentDiv = document.createElement("div");
+                    commentDiv.classList.add("comment");
+                    commentDiv.innerHTML = `
+                        <strong>${comment.energyType}:</strong> ${comment.text} <br>
+                        <small>${new Date(comment.timestamp.toDate()).toLocaleString()}</small>
+                    `;
+                    commentsList.appendChild(commentDiv);
+                });
+            });
+        }
+
+        // initial load of comments
+        loadComments();
+    </script>
+</body>
+</html>

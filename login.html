@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .login-container {
+            max-width: 400px;
+            margin: 100px auto;
+            padding: 20px;
+            background-color: #f8f8f8;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        .login-container h1 {
+            color: #004466;
+            font-size: 28px;
+            margin-bottom: 20px;
+        }
+
+        .login-container form {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .login-container label {
+            font-size: 16px;
+            color: #004466;
+            text-align: left;
+            width: 100%;
+            margin-bottom: 5px;
+        }
+
+        .login-container input {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 20px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+
+        .login-container button {
+            padding: 10px 20px;
+            background-color: #004466;
+            color: white;
+            font-size: 16px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .login-container button:hover {
+            background-color: #006699;
+        }
+
+        /* message box */
+        .message-box {
+            margin-top: 10px;
+            padding: 10px;
+            border-radius: 5px;
+            text-align: center;
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+        .message-box.success {
+            background-color: #4CAF50;
+            color: white;
+        }
+
+        .message-box.error {
+            background-color: #f44336;
+            color: white;
+        }
+    </style>
+    <script src="https://www.gstatic.com/firebasejs/9.17.2/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.17.2/firebase-auth.js"></script>
+</head>
+<body>
+    <header>
+        <div class="navbar">
+            <a href="index.html" class="back-button">Back to Home</a>
+        </div>
+    </header>
+    <main class="content">
+        <div class="login-container" id="loginContainer">
+            <h1>Login</h1>
+            <form id="loginForm">
+                <label for="email">Email</label>
+                <input type="email" id="email" name="email" placeholder="Enter your email" required>
+                
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" placeholder="Enter your password" required>
+                
+                <button type="submit">Login</button>
+                <div id="messageBox" class="message-box"></div>
+            </form>
+            <div class="signup-link">
+                <p>Don't have an account? <a href="signup.html">Sign Up.</a></p>
+            </div>
+        </div>
+    </main>
+
+    <script type="module">
+        // import Firebase modules
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.17.2/firebase-app.js";
+        import { getAuth, signInWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.17.2/firebase-auth.js";
+        import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/10.5.0/firebase-firestore.js";
+
+    
+        // firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyAg8oneWOqeYsz4G_E_3VEcBb19l7QlwVA",
+            authDomain: "global-green-dc846.firebaseapp.com",
+            projectId: "global-green-dc846",
+            storageBucket: "global-green-dc846.firebasestorage.app",
+            messagingSenderId: "392990661986",
+            appId: "1:392990661986:web:992e1ff8089c32dd61e03b"
+        };
+        
+        // initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+    
+        //form submission
+        document.getElementById("loginForm").addEventListener("submit", function(event) {
+            event.preventDefault(); 
+        
+            const email = document.getElementById("email").value;
+            const password = document.getElementById("password").value;
+            const messageBox = document.getElementById("messageBox");
+        
+            console.log("Logging in with:", email, password);  
+        
+            signInWithEmailAndPassword(auth, email, password)
+                .then((userCredential) => {
+                    // Successful login
+                    const user = userCredential.user;
+                    console.log("Login successful:", user); 
+                    messageBox.textContent = "Login successful!";
+                    messageBox.className = "message-box success";
+        
+                    // redirect to community forum page
+                    setTimeout(() => {
+                        window.location.href = "forum.html"; 
+                    }, 2000);
+                })
+                .catch((error) => {
+                    // Handle errors
+                    const errorCode = error.code;
+                    const errorMessage = error.message;
+                    console.log("Error occurred:", errorCode, errorMessage);  
+        
+                    let displayMessage = "Login failed. Please try again.";
+        
+                    if (errorCode === "auth/wrong-password") {
+                        displayMessage = "Incorrect password. Please try again.";
+                    } else if (errorCode === "auth/user-not-found") {
+                        displayMessage = "No account found with this email address.";
+                    } else if (errorCode === "auth/invalid-email") {
+                        displayMessage = "The email address is not valid.";
+                    }
+        
+                    messageBox.textContent = displayMessage;
+                    messageBox.className = "message-box error";
+                });
+        });
+    </script>
+</body>
+</html>

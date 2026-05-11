@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Up</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .signup-container {
+            max-width: 400px;
+            margin: 100px auto;
+            padding: 20px;
+            background-color: #f8f8f8;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        .signup-container h1 {
+            color: #004466;
+            font-size: 28px;
+            margin-bottom: 20px;
+        }
+
+        .signup-container form {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .signup-container label {
+            font-size: 16px;
+            color: #004466;
+            text-align: left;
+            width: 100%;
+            margin-bottom: 5px;
+        }
+
+        .signup-container input {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 20px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+
+        .signup-container button {
+            padding: 10px 20px;
+            background-color: #004466;
+            color: white;
+            font-size: 16px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .signup-container button:hover {
+            background-color: #006699;
+        }
+
+        .notification {
+            margin-top: 10px;
+            padding: 10px;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+
+        .success {
+            color: white;
+            background-color: #4CAF50;
+        }
+
+        .error {
+            color: white;
+            background-color: #f44336;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class="navbar">
+            <a href="index.html" class="back-button">Back to Home</a>
+        </div>
+    </header>
+    <main class="content">
+        <div class="signup-container">
+            <h1>Sign Up</h1>
+            <form id="signupForm">
+                <label for="username">Username</label>
+                <input type="text" id="username" name="username" placeholder="Enter your username" required>
+
+                <label for="email">Email</label>
+                <input type="email" id="email" name="email" placeholder="Enter your email" required>
+
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" placeholder="Enter your password" required>
+
+                <label for="confirm-password">Confirm Password</label>
+                <input type="password" id="confirm-password" name="confirm-password" placeholder="Confirm your password"
+                    required>
+
+                <button type="submit">Sign Up</button>
+            </form>
+            <div id="notification" class="notification"></div>
+            <div class="login-link">
+                <p>Have an account? <a href="login.html">Log In.</a></p>
+            </div>
+        </div>
+
+    </main>
+    <script type="module">
+        // import Firebase modules
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.5.0/firebase-app.js";
+        import { getAuth, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.5.0/firebase-auth.js";
+        import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/10.5.0/firebase-firestore.js";
+
+        //forebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyAg8oneWOqeYsz4G_E_3VEcBb19l7QlwVA",
+            authDomain: "global-green-dc846.firebaseapp.com",
+            projectId: "global-green-dc846",
+            storageBucket: "global-green-dc846.firebasestorage.app",
+            messagingSenderId: "392990661986",
+            appId: "1:392990661986:web:992e1ff8089c32dd61e03b"
+        };
+
+        // initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        //form submission
+        document.getElementById("signupForm").addEventListener("submit", async function (event) {
+            event.preventDefault(); 
+
+            const username = document.getElementById("username").value;
+            const email = document.getElementById("email").value;
+            const password = document.getElementById("password").value;
+            const confirmPassword = document.getElementById("confirm-password").value;
+            const notification = document.getElementById("notification");
+
+            // reset notification
+            notification.textContent = "";
+            notification.className = "notification";
+
+            // validate password confirmation
+            if (password !== confirmPassword) {
+                notification.textContent = "Passwords do not match.";
+                notification.className = "notification error";
+                return;
+            }
+
+            try {
+                // create user with email and password in firebase auth
+                const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+                const user = userCredential.user;
+
+                // save to firestore
+                await setDoc(doc(db, "users", user.uid), {
+                    username: username,
+                    email: email
+                });
+
+                //success message
+                notification.textContent = `Signup successful! Welcome, ${username}!`;
+                notification.className = "notification success";
+
+                // clear
+                this.reset();
+            } catch (error) {
+                console.error("Error during signup:", error.message);
+
+                // error message
+                notification.textContent = error.message;
+                notification.className = "notification error";
+            }
+        });
+    </script>
+</body>
+</html>

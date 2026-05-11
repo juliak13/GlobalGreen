@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Renewable Energy Comparison Tool</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        h3 {
+            margin-top: 5px;
+            margin-bottom: 5px;
+            text-align: center;
+        }
+        /* select box */
+        .filter-container {
+            margin: 40px auto;
+            width: flex;
+            max-width: 1200px;
+            text-align: center;
+            background-color: #fff;
+            border-radius: 8px;
+            padding: 5px;
+            box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .filter-container h2 {
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        label {
+            font-size: 18px;
+            font-weight: 600;
+            margin-right: 15px;
+            color: #333;
+        }
+
+        select {
+            font-size: 16px;
+            padding: 12px;
+            border: 2px solid #ccc;
+            border-radius: 5px;
+            background-color: #f9f9f9;
+            color: #333;
+            margin: 10px 0;
+            width: 100%;
+            max-width: 250px;
+        }
+
+        select:focus {
+            border-color: #004466;
+            outline: none;
+            background-color: #fff;
+        }
+
+        /* button styling */
+        .resource-selection {
+            display: flex;
+            justify-content: space-between;
+            gap: 20px;
+            align-items: center;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+        }
+
+        .resource-selection>div {
+            flex: 1;
+            min-width: 200px;
+        }
+
+        button.compare-btn,
+        .view-all-btn {
+            font-family: Verdana, sans-serif;
+            background-color: #004466;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 5px;
+            text-align: center;
+            text-decoration: none;
+            display: block;
+            cursor: pointer;
+            width: 100%;
+            max-width: 250px;
+            margin: 10px auto;
+            font-size: 16px;
+            transition: background-color 0.3s ease;
+        }
+
+        button.compare-btn:hover,
+        .view-all-btn:hover {
+            background-color: #003355;
+        }
+
+
+        /* comparison table */
+        .comparison-table {
+            width: flex;
+            margin: 20px auto;
+            max-width: 1200px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class="navbar">
+            <a href="index.html">Home</a>
+            <a href="solar.html">Solar Energy</a>
+            <a href="wind.html">Wind Energy</a>
+            <a href="hydroelectric.html">Hydroelectric Energy</a>
+            <a href="bioenergy.html">Biomass Energy</a>
+            <a href="geothermal.html">Geothermal Energy</a>
+            <a href="maps.html">Map</a>
+            <a href="comparison.html" class="active">Comparison Tool</a>
+            <a href="forum.html">Community Forum</a>
+        </div>
+    </header>
+
+    <div class="content">
+        <div class="box">
+            <h2>Renewable Energy Comparison Tool</h2>
+            <h3>For Residents</h3>
+
+            <!-- resource selection -->
+            <div class="filter-container">
+                <h2>Select Resources to Compare</h2>
+                <div class="resource-selection">
+                    <div>
+                        <label for="resource1">First Resource:</label>
+                        <select id="resource1">
+                            <option value="solar">Solar Energy</option>
+                            <option value="wind">Wind Energy</option>
+                            <option value="hydroelectric">Hydroelectric Energy</option>
+                            <option value="bioenergy">Biomass Energy</option>
+                            <option value="geothermal">Geothermal Energy</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label for="resource2">Second Resource:</label>
+                        <select id="resource2">
+                            <option value="solar">Solar Energy</option>
+                            <option value="wind">Wind Energy</option>
+                            <option value="hydroelectric">Hydroelectric Energy</option>
+                            <option value="bioenergy">Biomass Energy</option>
+                            <option value="geothermal">Geothermal Energy</option>
+                        </select>
+                    </div>
+                </div>
+                <button class="compare-btn" onclick="compareResources()">Compare</button>
+                <button class="view-all-btn" onclick="resetTable(event)"> View All Resources</button>
+            </div>
+
+            <!-- comparison table -->
+            <div class="comparison-table">
+                <p style="text-align: center;">There are many factors that go into finding which energy type is best for home and situation. Additional research is required.</p>
+                <table id="comparisonTable">
+                    <thead>
+                        <tr>
+                            <th>Metric</th>
+                            <th class="solar">Solar Energy</th>
+                            <th class="wind">Wind Energy</th>
+                            <th class="hydroelectric">Hydroelectric Energy</th>
+                            <th class="bioenergy">Biomass Energy</th>
+                            <th class="geothermal">Geothermal Energy</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Average Cost*</td>
+                            <td class="solar"><a href="https://www.solarreviews.com/solar-panel-cost">$16,500 – $25,000</a></td>
+                            <td class="wind"><a href="https://homeguide.com/costs/wind-turbine-cost#:~:text=A%20home%20wind%20turbine%20costs%20%2420%2C000%20to%20%2480%2C000%20with%20installation,all%20the%20home's%20energy%20needs.">$500 - $80,000</a></td>
+                            <td class="hydroelectric"><a href="https://www.sunecohydro.com/how-much-does-a-5kw-hydro-turbine-cost/">$15,000 - $55,000</a></td>
+                            <td class="bioenergy"><a href="https://www.saveonenergy.com/green-energy/biomass-energy/">$5,000 - $19,000</a></td>
+                            <td class="geothermal"><a href="https://www.carrier.com/residential/en/us/products/geothermal-heat-pumps/cost-buying-geothermal-heat-pump/">$10,000 - $30,000</a></td>
+                        </tr>
+                        <tr>
+                            <td>Annual Energy Output</td>
+                            <td class="solar"><a href="https://www.forbes.com/home-improvement/solar/how-much-power-does-a-solar-panel-produce/#:~:text=These%20days%2C%20the%20latest%20and,accommodate%20their%20habits%20and%20needs.&text=The%20optimal%20solar%20panels%20produce,that%20directly%20affect%20energy%20production.">250 - 400 watts</a></td>
+                            <td class="wind"><a href="https://bkvenergy.com/learning-center/how-much-energy-does-a-wind-turbine-produce/">1,000 kWh - 20,000kWh</a></td>
+                            <td class="hydroelectric"><a href="https://www.micro-hydro-power.com/A-Guide-to-Hydro-Power.htm#:~:text=A%201kW%20turbine%20will%20produce,about%205%2C000kWh%20per%20year)."> ≈8,000kWh </a></td>
+                            <td class="bioenergy"><a href="https://www.eia.gov/energyexplained/biomass/"> ≈450 TBtu </a></td>
+                            <td class="geothermal"><a href="https://www.eia.gov/energyexplained/geothermal/use-of-geothermal-energy.php"> 3,000 kWh - 10,000kWh </a></td>
+                        </tr>
+                        <tr>
+                            <td>Payback Period</td>
+                            <td class="solar"><a href="https://www.forbes.com/home-improvement/solar/guide-to-solar-payback-periods/#:~:text=Key%20Takeaways%20*%20The%20solar%20panel%20payback,the%20time%20to%20recoup%20your%20solar%20investment."> 6 - 10 years </a></td>
+                            <td class="wind"><a href="https://quickelectricity.com/home-wind-turbines/"> 7 - 11 years </a></td>
+                            <td class="hydroelectric"><a href="https://www.netregs.org.uk/environmental-topics/carbon-reduction-and-efficiency/generate-renewable-energy/hydroelectric-power/#:~:text=store%20water%20in%20a%20reservoir,is%20a%20well%2Ddeveloped%20technology."> more than 10 years </a></td>
+                            <td class="bioenergy"><a href="https://www.herschel-infrared.com/comparison-with-other-heating/biomass-boilers-comparison/"> 5 - 9 years </a></td>
+                            <td class="geothermal"><a href="https://scottleeheating.com/how-long-does-geothermal-take-to-pay-off/#:~:text=If%20you%20rely%20heavily%20on,far%20more%20accurate%20payback%20estimate."> 3 - 10 years </a></td>
+                        </tr>
+                        <tr>
+                            <td>Maintenance Cost</td>
+                            <td class="solar"><a href="https://www.fixr.com/costs/solar-panel-maintenance#:~:text=Solar%20panel%20maintenance%20costs%20average,on%20a%20one%2Dstory%20home."> $300 - $700</a></td>
+                            <td class="wind"><a href="https://homeguide.com/costs/wind-turbine-cost#:~:text=Maintenance%20and%20operational%20costs,repairs%2C%20security%2C%20and%20management.&text=Offshore%20wind%20turbines%20have%20higher,and%20turbines%20become%20more%20durable."> $500 - $1,000+ </a></td>
+                            <td class="hydroelectric"><a href="https://www.irena.org/-/media/Files/IRENA/Agency/Publication/2012/RE_Technologies_Cost_Analysis-HYDROPOWER.pdf"> $80 - $320 </a></td>
+                            <td class="bioenergy"><a href="https://www.homeadvisor.com/cost/heating-and-cooling/repair-a-geothermal-heating-or-cooling-system/"> $150 - $300 </a></td>
+                            <td class="geothermal"><a href="https://www.homeadvisor.com/cost/heating-and-cooling/repair-a-geothermal-heating-or-cooling-system/"> $196 - $1,700 </a></td>
+                        </tr>
+                        <tr>
+                            <td>Enviromental Impact</td>
+                            <td class="solar">No CO2 Emissions</td>
+                            <td class="wind">No C02 Emissions</td>
+                            <td class="hydroelectric">No Co2 Emissions, water/soil disruption</td>
+                            <td class="bioenergy">Low CO2 Emissions (burning), air pollution</td>
+                            <td class="geothermal">Minimal C02 Emissions, minimal air pollution (gas emissions)</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <p>*These are price averages meaning that the cost may be more or less that what is stated.</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function compareResources() {
+            // get the selected resources
+            var resource1 = document.getElementById("resource1").value;
+            var resource2 = document.getElementById("resource2").value;
+
+            // select all columns, excluding the first column (index/metric)
+            var columns = document.querySelectorAll("th:not(:first-child), td:not(:first-child)");
+
+            // hide all columns initially
+            columns.forEach(function (col) {
+                col.style.display = "none";
+            });
+
+            // show the first column (index/metric)
+            document.querySelectorAll("th:first-child, td:first-child").forEach(function (col) {
+                col.style.display = "table-cell";
+            });
+
+            // show columns for the selected resources
+            if (resource1 !== "all") {
+                document.querySelectorAll("." + resource1).forEach(function (col) {
+                    col.style.display = "table-cell";
+                });
+            }
+            if (resource2 !== "all") {
+                document.querySelectorAll("." + resource2).forEach(function (col) {
+                    col.style.display = "table-cell";
+                });
+            }
+        }
+
+        function resetTable(event) {
+            event.preventDefault();
+
+            // reset
+            document.querySelectorAll("th, td").forEach(function (col) {
+                col.style.display = "table-cell";
+            });
+
+            // reset dropdown
+            document.getElementById("resource1").selectedIndex = 0;
+            document.getElementById("resource2").selectedIndex = 0;
+        }
+    </script>
+</body>
+</html>
